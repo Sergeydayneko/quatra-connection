@@ -15,17 +15,32 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/arduino")
-public class ArduinoChangeController {
-    private final ArduinoChangerServiceImpl firebaseChangerService;
+public class ArduinoController {
+    private final ArduinoChangerServiceImpl arduinoChangerService;
 
     @GetMapping("/restartTimer")
     public ResponseEntity<Integer> getRestartTimeById(@RequestParam String id) {
         try {
-            return ResponseEntity.ok(firebaseChangerService.getRestartTimeById(id));
+            return ResponseEntity.ok(arduinoChangerService.getRestartTimeById(id));
         } catch (ExecutionException | InterruptedException ex) {
             log.error("Error occurred while was trying to get restartTimer for id = " + id);
             return null;
         }
+    }
+
+    @GetMapping("/lock")
+    public ResponseEntity changeDoorState(@RequestParam  String id, @RequestParam boolean lockState) {
+        arduinoChangerService.updateRoomsLock(id, lockState);
+
+        return ResponseEntity.ok("State has been changed");
+    }
+
+    @GetMapping
+    public ResponseEntity changeRealState(@RequestParam  String id, @RequestParam boolean realLockState) {
+        arduinoChangerService.updateRealRoomLock(id, realLockState);
+
+        // todo добавить контроль над ошибками
+        return ResponseEntity.ok("State has been changed");
     }
 
 //    @GetMapping("/data")
